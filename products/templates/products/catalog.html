@@ -1,0 +1,83 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% load mptt_tags %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-catalog__wrap container__custom">
+    <h1 data-aos="fade-right" class="main-catalog__title">{{ parent_category.name }}</h1>
+    <main data-aos="fade-left" data-aos-delay="200" class="main-catalog">
+        <div class="swiper main-catalog__carousel">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="main-catalog__list">
+                        {% for prod in products %}
+                        <div class="main-catalog__item">
+                            <div class="main-catalog__item__img__wrap">
+                                {% if prod.image %}
+                                <img class="main-catalog__item__img" src="{{ prod.image.url }}" alt="">
+                                {% else %}
+                                <img class="main-catalog__item__img" src="{% static 'placeholder_image.jpg' %}" alt="No Image">
+                                {% endif %}
+                            </div>
+                            <p class="main-catalog__item__title"><a href="{% url 'products:product_detail' prod.slug %}">{{ prod.name }}</a></p>
+                            <span class="main-catalog__item__price">{{ prod.price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1"><<</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">Попередня</a>
+                {% endif %}
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Наступна</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">>></a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+   <aside data-aos="fade-right" data-aos-delay="100" class="aside-catalog__wrap">
+    <section class="aside">
+        <div class="aside-catalog__content">
+            <!-- Вывод чекбоксов для производителей -->
+            <h5 class="aside-main__title">Производители</h5>
+            <ul class="aside-main__list">
+                {% for el in manufacturer %}
+                <li class="aside-main__item">
+                    <input id="filter_{{ el.id }}" type="checkbox" />
+                    <label for="filter_{{ el.id }}">{{ el.name }}</label>
+                </li>
+                {% endfor %}
+            </ul>
+            <hr size="1px" color="#ddd" width="90%" style="margin: 10px auto;">
+
+            <!-- Вывод остальных фильтров -->
+           {% for filter in  filters %}
+                            <h5 class="aside-main__title">{{ filter.name }}</h5>
+                            <ul class="aside-main__list">
+                                {% for prod in  product_text %}
+                                    {% if prod.0 == filter.pk %}
+
+                                  <li class="aside-main__item">
+                                      <input id="ZOOM" type="checkbox" />
+                                      <label for="ZOOM">{{ prod.1 }}</label>
+                                  </li>
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
+                            <hr size="1px" color="#ddd" width="90%" style="margin: 10px auto;">
+                      {% endfor %}
+        </div>
+    </section>
+</aside>
+</div>
+{% endblock %}
